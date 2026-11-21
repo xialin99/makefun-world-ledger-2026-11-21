@@ -1,4 +1,4 @@
-# The World Ledger · 21 November 2026
+# 世界纪事 / The World Ledger · 21 November 2026
 
 [中文](#中文) · [English](#english)
 
