@@ -2,7 +2,9 @@
 
 [中文](#中文) · [English](#english)
 
-![Preview](entry.png)
+![中文版新闻图](entry.zh.png)
+
+[中文版 / Chinese](entry.zh.png) · [English edition / 英文版](entry.png)
 
 ## 中文
 
@@ -10,7 +12,7 @@
 
 ### 本地运行
 
-直接查看 `entry.png`。Windows 下运行 `./render.ps1` 可重制图像，报道来源见 `SOURCES.md`。
+直接打开 [中文版](entry.zh.png) 或 [英文版](entry.png)。在 Windows PowerShell 7 中运行 `./render.ps1` 生成中文版，添加 `-Language en` 生成英文版。 报道来源见 [中文来源表](SOURCES.zh.md)。
 
 ## English
 
@@ -18,7 +20,7 @@ The 21 November evening edition brings together 21 dated events, led by COP31 an
 
 ### Run locally
 
-Open `entry.png`, or run `./render.ps1` on Windows to regenerate it. See `SOURCES.md` for reporting and chronology.
+Open the [Chinese edition](entry.zh.png) or the [English edition](entry.png). Run `./render.ps1` in PowerShell 7 on Windows. Add `-Language en` to render the English edition. See [SOURCES.md](SOURCES.md) for reporting sources.
 
 [make.fun 赛事 / Original bounty](https://make.fun/bounty/news-image-20261121)
 

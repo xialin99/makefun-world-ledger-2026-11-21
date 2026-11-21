@@ -1,7 +1,51 @@
 param(
-    [string]$Output = (Join-Path $PSScriptRoot 'entry.png'),
+    [ValidateSet('zh', 'en')][string]$Language = 'zh',
+    [string]$Output,
     [string]$Preview
 )
+
+if (!$Output) { $Output = Join-Path $PSScriptRoot $(if ($Language -eq 'zh') { 'entry.zh.png' } else { 'entry.png' }) }
+$Chinese = @{
+    'The World Ledger' = '世界纪事'
+    'SATURDAY  /  EVENING UTC' = '周六 / 晚间版 UTC'
+    '21 November 2026' = '2026年11月21日'
+    'CLIMATE  /  ANTALYA, TURKEY' = '气候 / 土耳其安塔利亚'
+    'COP31 stalls' = 'COP31 谈判受阻'
+    'into the night' = '持续至深夜'
+    'ANTALYA' = '安塔利亚'
+    'Fossil fuel language and climate' = '化石燃料措辞和气候资金'
+    'finance remain in dispute.' = '仍存在分歧。'
+    'SPACE  /  ESA–JAXA' = '太空 / 欧空局与日本宇航机构'
+    'Mercury orbit' = '探测器进入'
+    'achieved' = '水星轨道'
+    'BepiColombo arrives after' = '贝皮科隆博号经过'
+    'nearly eight years in transit.' = '近八年的飞行后抵达。'
+    'EUROPE' = '欧洲'
+    'Kryvyi Rih strike: officials report 2 dead' = '克里维里赫遇袭，官方通报 2 人死亡'
+    'Ship burns after Gulf of Finland drone hit' = '芬兰湾船只遭无人机袭击后起火'
+    'EU condemns alleged plot on Danish soil' = '欧盟谴责据称在丹麦境内策划的阴谋'
+    'Geneva: autonomous arms talks extended' = '日内瓦延长自主武器谈判'
+    'Turin: Alcaraz beats Shelton to reach final' = '都灵：阿尔卡拉斯胜谢尔顿晋级决赛'
+    'Twickenham: England 37–12 New Zealand' = '特威克纳姆：英格兰 37–12 新西兰'
+    'Dublin: Ireland 20–17 South Africa' = '都柏林：爱尔兰 20–17 南非'
+    'AMERICAS' = '美洲'
+    'Sinaloa: cartel chief Meza Flores captured' = '锡那罗亚毒枭梅萨·弗洛雷斯被捕'
+    'Peru: 6.7 quake near Carhuamayo' = '秘鲁卡尔瓦马约附近发生 6.7 级地震'
+    'Brasília hospital: Bolsonaro stable in ICU' = '巴西利亚医院称博索纳罗在重症病房病情稳定'
+    'PERU' = '秘鲁'
+    'MIDDLE EAST' = '中东'
+    'Gaza City hospital: food-truck strike kills 3' = '加沙城医院称送餐卡车遇袭，3 人死亡'
+    'Coalition: 3 Houthi missiles down at Riyadh' = '联军称在利雅得拦截 3 枚胡塞导弹'
+    'AFRICA' = '非洲'
+    'Bayelsa: Friday capsize toll reaches 24+' = '巴耶尔萨州周五沉船死亡人数达 24 人以上'
+    'South Africa: ANC seeks local coalitions' = '南非非国大寻求组建地方执政联盟'
+    'Turkana: Kenya begins crude oil drilling' = '肯尼亚图尔卡纳开始原油钻探'
+    'ASIA & PACIFIC' = '亚太'
+    'Jiuquan: final Shenzhou-24 drill complete' = '酒泉完成神舟二十四号发射前最后演练'
+    'Macau: Hickman wins fifth motorcycle GP' = '澳门：希克曼第五次夺得摩托车大奖赛冠军'
+    'APEC trio calls for Russia–Ukraine truce' = 'APEC 三国呼吁俄乌停火'
+    'Udine rugby: Fiji 21–16 Italy' = '乌迪内橄榄球赛：斐济 21–16 意大利'
+}
 
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
@@ -33,11 +77,18 @@ function Line($x1, $y1, $x2, $y2, $color, $weight = 1) {
 }
 
 function TextAt($value, $x, $y, $size, $maxWidth, $color = $ink, $family = 'Arial', $style = 'Regular') {
+    if ($Language -eq 'zh') { $value = $Chinese[$value]; $family = 'Microsoft YaHei UI' }
     $font = [Drawing.Font]::new($family, $size, $style, 'Pixel')
     if ($font.FontFamily.Name -ne $family) { throw "Missing font: $family" }
     $brush = Brush $color
     $format = [Drawing.StringFormat]::GenericTypographic
     $measurement = $g.MeasureString($value, $font, 2048, $format)
+    while ($Language -eq 'zh' -and $measurement.Width -gt $maxWidth -and $size -gt 14) {
+        $font.Dispose()
+        $size--
+        $font = [Drawing.Font]::new($family, $size, $style, 'Pixel')
+        $measurement = $g.MeasureString($value, $font, 2048, $format)
+    }
     if ($measurement.Width -gt $maxWidth -or $x + $maxWidth -gt 1024 -or
         $y + $measurement.Height -gt 1024 -or $x -lt 0 -or $y -lt 0) {
         throw "Text overflow at ($x,$y): $value ($($measurement.Width) > $maxWidth)"
